@@ -3,8 +3,10 @@ import { addCropCycle } from '../lib/crop-db';
 
 interface OnboardingWizardProps {
   onComplete: (data: OnboardData) => void;
-  onSkip: () => void; // existing user → go straight to home
-  onBack?: () => void; // back to landing page
+  onSkip: () => void;
+  onBack?: () => void;
+  initialStep?: number;
+  prefillName?: string;
 }
 
 export interface OnboardData {
@@ -33,8 +35,8 @@ const PHASES = [
 
 const STEP_LABELS = ['Your Profile', 'Farm Details', 'Your Kit'];
 
-export default function OnboardingWizard({ onComplete, onSkip, onBack }: OnboardingWizardProps) {
-  const [step, setStep] = useState(1);
+export default function OnboardingWizard({ onComplete, onSkip, onBack, initialStep = 1, prefillName = '' }: OnboardingWizardProps) {
+  const [step, setStep] = useState(initialStep);
   const [lang, setLang] = useState<'en' | 'hi'>('en');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,7 +44,7 @@ export default function OnboardingWizard({ onComplete, onSkip, onBack }: Onboard
   const [otp, setOtp] = useState('');
 
   const [form, setForm] = useState<OnboardData>({
-    name: '', phone: '', language: 'en',
+    name: prefillName, phone: '', language: 'en',
     cropType: '', customCrop: '', farmSize: '', farmUnit: 'acres',
     soilType: '', phase: 'growth', plantingDate: '',
     kitChoice: 'none',

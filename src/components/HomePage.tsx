@@ -1,9 +1,16 @@
 import { useState } from 'react';
+import * as React from 'react';
+import { useWeather } from '../services/weatherLocation';
 import Chatbot from './Chatbot';
 import CropLog from './CropLog';
 import CropSuggestions from './CropSuggestions';
 import CalendarAlerts from './CalendarAlerts';
 import Settings from './Settings';
+import VoiceTest from './VoiceTest';
+import SoilNPKPanel from './SoilNPKPanel';
+import GovSchemes from './GovSchemes';
+import Marketplace from './Marketplace';
+import Compliance from './Compliance';
 
 interface HomePageProps {
   selectedPhase: string;
@@ -13,15 +20,16 @@ interface HomePageProps {
   onLogoClick: () => void;
   onAddCrop?: () => void;
   onLogout?: () => void;
+  userName?: string;
 }
 
-type Panel = 'home' | 'soil' | 'crops' | 'weather' | 'ai' | 'disease' | 'pest' | 'alerts' | 'market' | 'community' | 'settings';
+type Panel = 'home' | 'soil' | 'crops' | 'weather' | 'ai' | 'disease' | 'alerts' | 'market' | 'community' | 'schemes' | 'compliance' | 'settings';
 
 const TITLES: Record<Panel, string> = {
   home: 'Dashboard', soil: 'Soil & NPK', crops: 'Crop Log',
   weather: 'Weather', ai: 'AI Advisor', disease: 'Disease Detection',
-  pest: 'Pest Scan', alerts: 'Alerts', market: 'Marketplace',
-  community: 'Community', settings: 'Settings',
+  alerts: 'Alerts', market: 'Marketplace',
+  community: 'Community', schemes: 'Govt Schemes', compliance: 'Compliance', settings: 'Settings',
 };
 
 const NAV = [
@@ -34,7 +42,8 @@ const NAV = [
   { section: 'Tools', items: [
     { id: 'ai' as Panel, icon: '◈', label: 'AI Advisor', badge: '● Live', badgeType: 'live' },
     { id: 'disease' as Panel, icon: '🔬', label: 'Disease Detection', badge: 'New', badgeType: 'g' },
-    { id: 'pest' as Panel, icon: '⌖', label: 'Pest Scan' },
+    { id: 'schemes' as Panel, icon: '🏛️', label: 'Govt Schemes' },
+    { id: 'compliance' as Panel, icon: '🛡️', label: 'Compliance' },
     { id: 'alerts' as Panel, icon: '◎', label: 'Alerts', badge: '4', badgeType: 'r' },
     { id: 'market' as Panel, icon: '⊞', label: 'Marketplace' },
   ]},
@@ -44,10 +53,16 @@ const NAV = [
   ]},
 ];
 
-export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChange, onLanguageChange, onLogoClick, onAddCrop, onLogout }: HomePageProps) {
+export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChange, onLanguageChange, onLogoClick, onAddCrop, onLogout, userName = 'Farmer' }: HomePageProps) {
   const [panel, setPanel] = useState<Panel>('home');
+  const { weather } = useWeather();
 
   const go = (p: Panel) => setPanel(p);
+
+  const weatherLabel = weather
+    ? `${weather.condition.split(' ')[0] === 'Clear' ? '☀️' : weather.rain_expected ? '🌧️' : '🌤️'} ${Math.round(weather.temperature_c)}°C · ${weather.location.split(',')[0]}`
+    : '🌤️ Loading…';
+  const locationLabel = weather ? weather.location : '📍 Detecting…';
 
   return (
     <div className="fs-dashboard" style={{ display: 'flex', height: '100vh', overflow: 'hidden', fontFamily: "'Crimson Pro', Georgia, serif", fontSize: 14, background: '#070d09', color: '#f0fdf4' }}>
@@ -91,68 +106,6 @@ export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChang
         .fs-toggle.on{background:#16a34a;}
         .fs-toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
         .fs-toggle.on::after{left:19px;}
-        /* ── AI ADVISOR PALETTE ── */
-        .fs-ai-wrap{background:#070d09!important;}
-        .fs-ai-wrap *{font-family:'Crimson Pro',Georgia,serif!important;}
-        /* All white/light surfaces */
-        .fs-ai-wrap .bg-white{background:#0e1a11!important;}
-        .fs-ai-wrap .bg-gray-50{background:#141f16!important;}
-        .fs-ai-wrap .bg-gray-100{background:#1a2b1d!important;}
-        .fs-ai-wrap .bg-green-50{background:rgba(34,197,94,0.08)!important;}
-        .fs-ai-wrap .bg-green-100{background:rgba(34,197,94,0.1)!important;}
-        .fs-ai-wrap .bg-green-600{background:#16a34a!important;}
-        .fs-ai-wrap .bg-green-700{background:#15803d!important;}
-        /* Messages container — key fix */
-        .fs-ai-wrap .bg-white.rounded-2xl{background:#0e1a11!important;border-color:rgba(255,255,255,0.06)!important;}
-        /* Bot bubble */
-        .fs-ai-wrap .rounded-bl-sm{background:rgba(34,197,94,0.07)!important;border:1px solid rgba(34,197,94,0.15)!important;color:#bbf7d0!important;}
-        /* User bubble */
-        .fs-ai-wrap .rounded-br-sm{background:rgba(245,158,11,0.10)!important;border:1px solid rgba(245,158,11,0.20)!important;color:#fde68a!important;}
-        /* Quick action cards */
-        .fs-ai-wrap .bg-white.rounded-xl{background:rgba(255,255,255,0.07)!important;border-color:rgba(255,255,255,0.13)!important;}
-        .fs-ai-wrap .bg-white.rounded-xl:hover{background:rgba(255,255,255,0.11)!important;}
-        .fs-ai-wrap .bg-green-50.rounded-full{background:rgba(34,197,94,0.12)!important;}
-        /* Text */
-        .fs-ai-wrap .text-gray-900,.fs-ai-wrap .text-gray-800,.fs-ai-wrap .text-gray-700{color:#f0fdf4!important;}
-        .fs-ai-wrap .text-gray-600,.fs-ai-wrap .text-gray-500{color:rgba(240,253,244,0.65)!important;}
-        .fs-ai-wrap .text-gray-400,.fs-ai-wrap .text-gray-300{color:rgba(240,253,244,0.35)!important;}
-        .fs-ai-wrap .text-green-600,.fs-ai-wrap .text-green-700,.fs-ai-wrap .text-green-800{color:#4ade80!important;}
-        .fs-ai-wrap .text-white{color:#f0fdf4!important;}
-        .fs-ai-wrap .text-blue-600,.fs-ai-wrap .text-blue-500{color:#60a5fa!important;}
-        .fs-ai-wrap .text-red-600{color:#f87171!important;}
-        /* Borders */
-        .fs-ai-wrap .border,.fs-ai-wrap .border-green-50,.fs-ai-wrap .border-green-100,.fs-ai-wrap .border-green-200,.fs-ai-wrap .border-gray-100,.fs-ai-wrap .border-gray-200{border-color:rgba(255,255,255,0.06)!important;}
-        .fs-ai-wrap .border-t,.fs-ai-wrap .border-b{border-color:rgba(255,255,255,0.06)!important;}
-        .fs-ai-wrap .border-green-300{border-color:rgba(34,197,94,0.2)!important;}
-        .fs-ai-wrap .border-l-2.border-gray-400{border-color:rgba(34,197,94,0.3)!important;}
-        /* Input */
-        .fs-ai-wrap input,.fs-ai-wrap textarea{background:rgba(255,255,255,0.06)!important;border:1px solid rgba(255,255,255,0.14)!important;color:#f0fdf4!important;}
-        .fs-ai-wrap input:focus,.fs-ai-wrap textarea:focus{border-color:rgba(34,197,94,0.3)!important;box-shadow:0 0 0 2px rgba(34,197,94,0.08)!important;}
-        .fs-ai-wrap input::placeholder,.fs-ai-wrap textarea::placeholder{color:rgba(240,253,244,0.3)!important;}
-        /* Select */
-        .fs-ai-wrap select{background:#141f16!important;border:1px solid rgba(255,255,255,0.12)!important;color:#f0fdf4!important;}
-        .fs-ai-wrap select option{background:#0e1a11;}
-        /* Send button — only solid pop */
-        .fs-ai-wrap button.bg-green-600{background:#16a34a!important;color:#fff!important;border:none!important;}
-        /* Inline table cells */
-        .fs-ai-wrap .bg-gray-50.rounded{background:rgba(255,255,255,0.05)!important;}
-        /* Status dots */
-        .fs-ai-wrap .bg-green-500{background:#22c55e!important;}
-        .fs-ai-wrap .bg-blue-500{background:#60a5fa!important;}
-        .fs-ai-wrap .bg-gray-300{background:rgba(255,255,255,0.2)!important;}
-        /* Hover states */
-        .fs-ai-wrap .hover\:bg-red-50:hover{background:rgba(248,113,113,0.1)!important;}
-        .fs-ai-wrap .hover\:text-red-600:hover{color:#f87171!important;}
-        /* Shadows */
-        .fs-ai-wrap .shadow-sm,.fs-ai-wrap .shadow-md,.fs-ai-wrap .shadow-lg{box-shadow:0 2px 16px rgba(0,0,0,0.5)!important;}
-        /* Scrollbar */
-        .fs-ai-wrap ::-webkit-scrollbar{width:3px;}
-        .fs-ai-wrap ::-webkit-scrollbar-thumb{background:rgba(34,197,94,0.2);border-radius:2px;}
-        /* Accent badges */
-        .fs-ai-wrap .bg-red-50,.fs-ai-wrap .bg-red-100{background:rgba(248,113,113,0.1)!important;}
-        .fs-ai-wrap .bg-blue-50,.fs-ai-wrap .bg-blue-100{background:rgba(96,165,250,0.1)!important;}
-        .fs-ai-wrap .bg-amber-100,.fs-ai-wrap .bg-yellow-100{background:rgba(245,158,11,0.12)!important;}
-        .fs-ai-wrap .text-amber-700,.fs-ai-wrap .text-yellow-700{color:#f59e0b!important;}
       `}</style>
 
       {/* ── SIDEBAR ── */}
@@ -162,16 +115,16 @@ export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChang
           <button onClick={onLogoClick} style={{ width: 32, height: 32, background: 'linear-gradient(135deg,#22c55e,#16a34a)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, boxShadow: '0 0 20px rgba(34,197,94,.3)', border: 'none', cursor: 'pointer', flexShrink: 0 }}>🌾</button>
           <div>
             <div style={{ fontFamily: "Playfair Display, Georgia, serif", fontWeight: 800, fontSize: 15, color: '#f0fdf4', letterSpacing: '-.3px' }}>FasalSetu</div>
-            <div style={{ fontSize: 9, color: 'rgba(240,253,244,.35)', letterSpacing: '.8px', fontWeight: 500, marginTop: 1 }}>by YieldMaxxers</div>
+            <div style={{ fontSize: 9, color: 'rgba(240,253,244,.35)', letterSpacing: '.8px', fontWeight: 500, marginTop: 1 }}>AI Farming Companion</div>
           </div>
         </div>
 
         {/* User card */}
         <div style={{ margin: '12px 12px 4px', padding: '10px 12px', background: '#121f15', border: '1px solid rgba(255,255,255,.06)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#166534,#064e3b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 12, border: '1.5px solid rgba(34,197,94,.3)', flexShrink: 0 }}>R</div>
+          <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#166534,#064e3b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 12, border: '1.5px solid rgba(34,197,94,.3)', flexShrink: 0 }}>{userName.charAt(0).toUpperCase()}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#f0fdf4' }}>Ramesh Ji</div>
-            <div style={{ fontSize: 10, color: 'rgba(240,253,244,.35)' }}>📍 Hisar, Haryana</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#f0fdf4' }}>{userName}</div>
+            <div style={{ fontSize: 10, color: 'rgba(240,253,244,.35)' }}>📍 {locationLabel}</div>
           </div>
           <div style={{ width: 8, height: 8, background: '#22c55e', borderRadius: '50%', animation: 'sbpulse 2s infinite', flexShrink: 0 }} />
         </div>
@@ -180,11 +133,11 @@ export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChang
         <div className="fs-sb-nav" style={{ padding: 8, flex: 1, overflowY: 'auto' }}>
           {NAV.map(group => (
             <div key={group.section}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.25)', letterSpacing: '1.2px', textTransform: 'uppercase', padding: '14px 8px 6px' }}>{group.section}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,.25)', letterSpacing: '1.2px', textTransform: 'uppercase', padding: '14px 8px 6px' }}>{group.section}</div>
               {group.items.map(item => (
                 <div key={item.id} className={`fs-nav-item${panel === item.id ? ' active' : ''}`} onClick={() => go(item.id)}>
                   <div style={{ width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13 }}>{item.icon}</div>
-                  <span style={{ flex: 1, fontSize: 12 }}>{item.label}</span>
+                  <span style={{ flex: 1, fontSize: 13 }}>{item.label}</span>
                   {item.badge && <span className={`fs-badge ${item.badgeType}`}>{item.badge}</span>}
                 </div>
               ))}
@@ -213,7 +166,7 @@ export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChang
         <div style={{ height: 56, borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 10, flexShrink: 0, background: '#fff' }}>
           <div style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 14, fontWeight: 700, color: '#111827', letterSpacing: '-.2px' }}>{TITLES[panel]}</div>
           <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '5px 12px', fontSize: 11, fontWeight: 600, color: '#16a34a', cursor: 'pointer' }} onClick={() => go('weather')}>☀️ 35°C · Hisar</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 20, padding: '5px 12px', fontSize: 11, fontWeight: 600, color: '#16a34a', cursor: 'pointer' }} onClick={() => go('weather')}>{weatherLabel}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 20, padding: '5px 12px', fontSize: 11, fontWeight: 600, color: '#1d4ed8', cursor: 'pointer' }}>💧 Irrigate by 6 AM</div>
           <div style={{ position: 'relative' }}>
             <div style={{ width: 32, height: 32, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 14 }}>🔔</div>
@@ -230,9 +183,10 @@ export default function HomePage({ selectedPhase, selectedLanguage, onPhaseChang
           {panel === 'weather'   && <div className="fs-panel"><CalendarAlerts /></div>}
           {panel === 'ai'        && <PanelAI />}
           {panel === 'disease'   && <PanelDisease />}
-          {panel === 'pest'      && <PanelPest />}
-          {panel === 'alerts'    && <PanelAlerts />}
-          {panel === 'market'    && <PanelMarket />}
+          {panel === 'schemes'    && <GovSchemes />}
+          {panel === 'compliance' && <Compliance />}
+          {panel === 'alerts'     && <PanelAlerts />}
+          {panel === 'market'    && <Marketplace />}
           {panel === 'community' && <PanelCommunity />}
           {panel === 'settings'  && <PanelSettings currentLanguage={selectedLanguage} onLanguageChange={onLanguageChange} onLogout={onLogout} />}
         </div>
@@ -385,71 +339,22 @@ function PanelHome({ onNav, onAddCrop }: { onNav: (p: Panel) => void; onAddCrop?
 
 // ── PANEL: SOIL ──────────────────────────────
 function PanelSoil() {
-  return (
-    <div className="fs-panel" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
-        {[
-          { icon: '💧', val: '62', unit: '%',    label: 'Moisture · Field A',  pill: 'Optimal', pillC: '#dcfce7', pillT: '#15803d', accent: '#60a5fa' },
-          { icon: '🌡️', val: '28', unit: ' °C',  label: 'Soil Temperature',    pill: 'Normal',  pillC: '#dcfce7', pillT: '#15803d', accent: '#22c55e' },
-          { icon: '⚗️', val: '6.8',unit: '',     label: 'pH Level · Neutral',  pill: 'Ideal',   pillC: '#dcfce7', pillT: '#15803d', accent: '#f59e0b' },
-          { icon: '⚡', val: '1.2',unit: ' dS/m',label: 'EC Level · Salinity', pill: 'Watch',   pillC: '#fef3c7', pillT: '#b45309', accent: '#fb923c' },
-        ].map(s => (
-          <div key={s.label} className="fs-scard">
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: s.accent }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <span style={{ fontSize: 18 }}>{s.icon}</span>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 20, background: s.pillC, color: s.pillT }}>{s.pill}</span>
-            </div>
-            <div style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 26, fontWeight: 800, color: '#111827', lineHeight: 1 }}>{s.val}<span style={{ fontSize: 12, color: '#6b7280', fontWeight: 400 }}>{s.unit}</span></div>
-            <div style={{ fontSize: 10, color: '#6b7280', marginTop: 5 }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* NPK */}
-      <div className="fs-card">
-        <div className="fs-card-head">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: "Playfair Display, Georgia, serif", fontSize: 12, fontWeight: 700, color: '#374151' }}><span style={{ width: 22, height: 22, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>🧪</span>NPK Analysis · Field A</div>
-        </div>
-        <div className="fs-card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-            {[
-              { letter: 'N', full: 'NITROGEN',   val: 42, unit: 'kg/ha', pct: 42, color: '#60a5fa', bg: 'rgba(59,130,246,.05)', border: 'rgba(59,130,246,.15)', rec: '⚠ Low — Apply Urea 20 kg/acre', recC: '#93c5fd' },
-              { letter: 'P', full: 'PHOSPHORUS', val: 28, unit: 'kg/ha', pct: 28, color: '#fb923c', bg: 'rgba(251,146,60,.05)',  border: 'rgba(251,146,60,.15)',  rec: '⚠ Low — Add DAP fertilizer',   recC: '#fdba74' },
-              { letter: 'K', full: 'POTASSIUM',  val: 85, unit: 'kg/ha', pct: 85, color: '#c084fc', bg: 'rgba(192,132,252,.05)', border: 'rgba(192,132,252,.15)', rec: '✓ Adequate level',              recC: '#d8b4fe' },
-            ].map(n => (
-              <div key={n.letter} style={{ borderRadius: 8, padding: 16, border: `1px solid ${n.border}`, background: n.bg, position: 'relative', overflow: 'hidden' }}>
-                <div style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 22, fontWeight: 900, color: n.color }}>{n.letter}</div>
-                <div style={{ fontSize: 9, color: '#9ca3af', letterSpacing: '.6px', marginTop: 1 }}>{n.full}</div>
-                <div style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 28, fontWeight: 800, color: '#111827', marginTop: 10 }}>{n.val}</div>
-                <div style={{ fontSize: 9, color: '#9ca3af' }}>{n.unit}</div>
-                <div style={{ height: 3, borderRadius: 2, margin: '10px 0 8px', background: `linear-gradient(90deg,${n.color} ${n.pct}%,#e5e7eb ${n.pct}%)` }} />
-                <div style={{ fontSize: 10, fontWeight: 600, color: n.recC }}>{n.rec}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 14, background: 'rgba(34,197,94,.04)', border: '1px solid rgba(34,197,94,.12)', borderLeft: '3px solid #16a34a', borderRadius: 8, padding: '12px 14px', fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-            <span style={{ color: '#16a34a', fontWeight: 700 }}>🤖 AI Recommendation:</span> Nitrogen is critical for wheat at Day 22. Apply 20 kg Urea/acre within 3 days — preferably morning, after light irrigation.
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <SoilNPKPanel />;
 }
 
-// ── PANEL: AI (wraps real Chatbot with dark theme) ────
+// ── PANEL: AI ────────────────────────────────
 function PanelAI() {
   return (
-    <div className="fs-panel fs-ai-wrap" style={{ background: '#070d09', borderRadius: 12, border: '1px solid rgba(34,197,94,.12)', overflow: 'hidden', minHeight: 'calc(100vh - 100px)' }}>
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 8, background: '#0e1a11' }}>
-        <div style={{ width: 22, height: 22, background: 'rgba(34,197,94,.15)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, border: '1px solid rgba(34,197,94,.2)' }}>◈</div>
-        <span style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 13, fontWeight: 700, color: '#4ade80' }}>FasalSetu AI Advisor</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#4ade80', marginLeft: 8 }}>
+    <div className="fs-panel" style={{ background: '#fff', borderRadius: 12, border: '1px solid #d1fae5', overflow: 'hidden', minHeight: 'calc(100vh - 100px)' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #d1fae5', display: 'flex', alignItems: 'center', gap: 8, background: '#f0fdf4' }}>
+        <div style={{ width: 22, height: 22, background: '#dcfce7', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, border: '1px solid #86efac' }}>◈</div>
+        <span style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 13, fontWeight: 700, color: '#15803d' }}>FasalSetu AI Advisor</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#16a34a', marginLeft: 8 }}>
           <div style={{ width: 6, height: 6, background: '#22c55e', borderRadius: '50%', animation: 'sbpulse 2s infinite' }} />
           Powered by Gemini AI
         </div>
       </div>
-      <div style={{ background: '#070d09' }}>
+      <div style={{ background: '#fff' }}>
         <Chatbot />
       </div>
     </div>
@@ -663,7 +568,14 @@ function PanelDisease() {
 
 // ── PANEL: PEST ──────────────────────────────
 function PanelPest() {
-  const pests = [
+  const [preview, setPreview]   = React.useState<string | null>(null);
+  const [base64, setBase64]     = React.useState<string | null>(null);
+  const [loading, setLoading]   = React.useState(false);
+  const [result, setResult]     = React.useState<any | null>(null);
+  const [error, setError]       = React.useState('');
+  const fileRef                 = React.useRef<HTMLInputElement>(null);
+
+  const SEASON_PESTS = [
     { emoji: '🐛', name: 'Aphids',         risk: 'HIGH', riskC: '#fee2e2', riskT: '#b91c1c', tx: 'Neem oil spray' },
     { emoji: '🍄', name: 'Yellow Rust',    risk: 'MED',  riskC: '#fef3c7', riskT: '#b45309', tx: 'Propiconazole' },
     { emoji: '🦗', name: 'Termites',       risk: 'LOW',  riskC: '#dcfce7', riskT: '#15803d', tx: 'Chlorpyrifos' },
@@ -671,37 +583,168 @@ function PanelPest() {
     { emoji: '🦟', name: 'Whitefly',       risk: 'LOW',  riskC: '#dcfce7', riskT: '#15803d', tx: 'Yellow traps' },
     { emoji: '🦠', name: 'Root Rot',       risk: 'HIGH', riskC: '#fee2e2', riskT: '#b91c1c', tx: 'Reduce water' },
   ];
+
+  const SEV_STYLE: Record<string, { bg: string; color: string }> = {
+    severe:   { bg: '#fee2e2', color: '#b91c1c' },
+    moderate: { bg: '#fef3c7', color: '#b45309' },
+    mild:     { bg: '#fef9c3', color: '#854d0e' },
+    healthy:  { bg: '#dcfce7', color: '#15803d' },
+    unknown:  { bg: '#f3f4f6', color: '#6b7280' },
+  };
+
+  const handleFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const b64 = e.target?.result as string;
+      setPreview(b64);
+      setBase64(b64);
+      setResult(null);
+      setError('');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file?.type.startsWith('image/')) handleFile(file);
+  };
+
+  const analyse = async () => {
+    if (!base64) return;
+    setLoading(true); setError(''); setResult(null);
+    try {
+      const { detectDiseaseFromImage } = await import('../services/diseaseDetectionService');
+      const res = await detectDiseaseFromImage(base64);
+      if (res?.structured) setResult(res.structured);
+      else setError('Detection failed. Make sure the ngrok tunnel is running.');
+    } catch (e: any) {
+      setError(e.message || 'Detection failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reset = () => { setPreview(null); setBase64(null); setResult(null); setError(''); };
+
   return (
-    <div className="fs-panel" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-      <div className="fs-card">
-        <div className="fs-card-head"><div style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 12, fontWeight: 700, color: '#374151' }}>⌖ Crop Scan</div></div>
-        <div className="fs-card-body">
-          <div style={{ border: '1.5px dashed rgba(34,197,94,.3)', borderRadius: 12, padding: 30, textAlign: 'center', cursor: 'pointer', background: 'rgba(34,197,94,.02)' }}>
-            <div style={{ fontSize: 42, marginBottom: 10 }}>📸</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>Upload or Take Photo</div>
-            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>AI identifies pests & diseases in seconds</div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 14 }}>
-              <div style={{ background: '#dcfce7', border: '1px solid rgba(34,197,94,.2)', color: '#15803d', fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 6, cursor: 'pointer' }}>📷 Camera</div>
-              <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', color: '#374151', fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 6, cursor: 'pointer' }}>📁 Upload</div>
+    <div className="fs-panel" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+
+        {/* ── Upload card ── */}
+        <div className="fs-card">
+          <div className="fs-card-head">
+            <div style={{ fontFamily: 'Playfair Display,Georgia,serif', fontSize: 12, fontWeight: 700, color: '#374151' }}>⌖ Pest & Disease Scan</div>
+            {preview && <button onClick={reset} style={{ fontSize: 10, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer' }}>✕ Clear</button>}
+          </div>
+          <div className="fs-card-body">
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
+              onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+
+            {!preview ? (
+              <div onDrop={handleDrop} onDragOver={e => e.preventDefault()}
+                style={{ border: '1.5px dashed rgba(34,197,94,.35)', borderRadius: 12, padding: 28, textAlign: 'center', background: 'rgba(34,197,94,.02)', cursor: 'pointer' }}
+                onClick={() => fileRef.current?.click()}>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>📸</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>Upload or Drop Photo</div>
+                <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>AI identifies pests & diseases instantly</div>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 14 }}>
+                  <button onClick={e => { e.stopPropagation(); fileRef.current?.setAttribute('capture','environment'); fileRef.current?.click(); }}
+                    style={{ background: '#dcfce7', border: '1px solid rgba(34,197,94,.2)', color: '#15803d', fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 6, cursor: 'pointer' }}>
+                    📷 Camera
+                  </button>
+                  <button onClick={e => { e.stopPropagation(); fileRef.current?.removeAttribute('capture'); fileRef.current?.click(); }}
+                    style={{ background: '#f9fafb', border: '1px solid #e5e7eb', color: '#374151', fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 6, cursor: 'pointer' }}>
+                    📁 Upload
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <img src={preview} alt="crop" style={{ width: '100%', borderRadius: 10, maxHeight: 200, objectFit: 'cover', marginBottom: 12 }} />
+                <button onClick={analyse} disabled={loading}
+                  style={{ width: '100%', padding: '10px 0', borderRadius: 8, background: loading ? '#e5e7eb' : 'linear-gradient(135deg,#15803d,#16a34a)', color: loading ? '#9ca3af' : '#fff', border: 'none', cursor: loading ? 'default' : 'pointer', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  {loading
+                    ? <><span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid #9ca3af', borderTopColor: '#374151', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /> Analysing…</>
+                    : '🔬 Scan for Pests & Disease'}
+                </button>
+                {error && <div style={{ marginTop: 8, fontSize: 11, color: '#b91c1c', background: '#fee2e2', padding: '7px 10px', borderRadius: 6 }}>{error}</div>}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Season threat index ── */}
+        <div className="fs-card">
+          <div className="fs-card-head"><div style={{ fontFamily: 'Playfair Display,Georgia,serif', fontSize: 12, fontWeight: 700, color: '#374151' }}>⚠️ Season Threat Index</div></div>
+          <div className="fs-card-body">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+              {SEASON_PESTS.map(p => (
+                <div key={p.name} style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+                  <div style={{ fontSize: 22, marginBottom: 5 }}>{p.emoji}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{p.name}</div>
+                  <div style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 3, display: 'inline-block', marginTop: 4, background: p.riskC, color: p.riskT }}>{p.risk}</div>
+                  <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 4 }}>{p.tx}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-      <div className="fs-card">
-        <div className="fs-card-head"><div style={{ fontFamily: "Playfair Display, Georgia, serif", fontSize: 12, fontWeight: 700, color: '#374151' }}>⚠️ Season Threat Index</div></div>
-        <div className="fs-card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-            {pests.map(p => (
-              <div key={p.name} style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, textAlign: 'center' }}>
-                <div style={{ fontSize: 22, marginBottom: 5 }}>{p.emoji}</div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#111827' }}>{p.name}</div>
-                <div style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 3, display: 'inline-block', marginTop: 4, background: p.riskC, color: p.riskT }}>{p.risk}</div>
-                <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 4 }}>{p.tx}</div>
+
+      {/* ── Result card ── */}
+      {result && (() => {
+        const sev = SEV_STYLE[result.severity] ?? SEV_STYLE.unknown;
+        return (
+          <div className="fs-card">
+            <div className="fs-card-head">
+              <div style={{ fontFamily: 'Playfair Display,Georgia,serif', fontSize: 12, fontWeight: 700, color: '#374151' }}>🔬 Scan Result</div>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: sev.bg, color: sev.color }}>
+                {result.severity?.toUpperCase()}
+              </span>
+            </div>
+            <div className="fs-card-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                {[
+                  { label: 'Plant',      val: result.plantName },
+                  { label: 'Issue',      val: result.diseaseName },
+                  { label: 'Confidence', val: `${result.confidence}%` },
+                ].map(f => (
+                  <div key={f.label} style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 9, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 4 }}>{f.label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{f.val}</div>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {result.treatment?.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#15803d', marginBottom: 6 }}>💊 Treatment Steps</div>
+                  {result.treatment.map((t: string, i: number) => (
+                    <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 0', borderBottom: '1px solid #f3f4f6', fontSize: 11, color: '#374151' }}>
+                      <span style={{ fontWeight: 700, color: '#16a34a', minWidth: 18 }}>{i + 1}.</span>
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {result.prevention?.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#b45309', marginBottom: 6 }}>🛡️ Prevention</div>
+                  {result.prevention.map((p: string, i: number) => (
+                    <div key={i} style={{ display: 'flex', gap: 8, padding: '5px 0', fontSize: 11, color: '#374151' }}>
+                      <span style={{ color: '#f59e0b' }}>•</span><span>{p}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        );
+      })()}
+
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }
@@ -750,7 +793,7 @@ function PanelMarket() {
     { emoji: '🧪', name: 'Urea Fertilizer 50kg',   brand: 'IFFCO',                  price: '₹290', old: '₹350', ai: true  },
     { emoji: '🌿', name: 'Neem Oil Pesticide 1L',  brand: 'Urvaan Partner',          price: '₹180', old: '₹220', ai: false },
     { emoji: '💊', name: 'DAP Fertilizer 25kg',    brand: 'Coromandel',              price: '₹660', old: '₹750', ai: true  },
-    { emoji: '🪴', name: 'FasalSetu Starter Kit',  brand: 'YieldMaxxers · Hardware', price: '₹2,499',old:'₹3,000',ai: false },
+    { emoji: '🪴', name: 'FasalSetu Starter Kit',  brand: 'FasalSetu · Hardware',    price: '₹2,499',old:'₹3,000',ai: false },
     { emoji: '🌱', name: 'Mustard RH-30 Seeds',    brand: 'Mahyco · Certified',      price: '₹350', old: '₹420', ai: false },
   ];
   return (

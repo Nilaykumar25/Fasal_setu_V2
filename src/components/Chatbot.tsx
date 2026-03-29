@@ -785,61 +785,204 @@ export default function Chatbot() {
   return (
     <div className="cb-root flex flex-col h-[calc(100vh-180px)]">
       <style>{`
-        .cb-root { --cb-bg: #070d09; --cb-s1: #0e1a11; --cb-s2: #141f16; --cb-s3: #1a2b1d; }
-        .cb-root * { font-family: 'Crimson Pro', Georgia, serif !important; }
-        .cb-root select, .cb-root input, .cb-root textarea {
-          background: rgba(255,255,255,0.06) !important;
-          border: 1px solid rgba(255,255,255,0.14) !important;
-          color: #f0fdf4 !important;
-          border-radius: 8px !important;
-        }
-        .cb-root select option { background: #0e1a11; }
-        .cb-root input::placeholder, .cb-root textarea::placeholder { color: rgba(240,253,244,0.3) !important; }
-        .cb-root input:focus, .cb-root textarea:focus { border-color: rgba(34,197,94,0.3) !important; outline: none !important; box-shadow: 0 0 0 2px rgba(34,197,94,0.08) !important; }
-        /* Messages area */
-        .cb-msgs { background: #0e1a11 !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 16px !important; }
-        /* Bot bubble */
-        .cb-bot-bubble { background: rgba(34,197,94,0.07) !important; border: 1px solid rgba(34,197,94,0.15) !important; color: #bbf7d0 !important; border-radius: 16px 16px 16px 3px !important; }
-        .cb-bot-bubble * { color: #bbf7d0 !important; }
-        .cb-bot-bubble strong { color: #4ade80 !important; }
-        /* User bubble */
-        .cb-user-bubble { background: rgba(245,158,11,0.10) !important; border: 1px solid rgba(245,158,11,0.20) !important; color: #fde68a !important; border-radius: 16px 16px 3px 16px !important; }
-        .cb-user-bubble * { color: #fde68a !important; }
-        /* Quick action chips */
-        .cb-chip { background: rgba(255,255,255,0.07) !important; border: 1px solid rgba(255,255,255,0.13) !important; color: rgba(240,253,244,0.7) !important; border-radius: 12px !important; transition: all 0.15s !important; }
-        .cb-chip:hover { background: rgba(255,255,255,0.11) !important; border-color: rgba(255,255,255,0.2) !important; color: #f0fdf4 !important; }
-        .cb-chip-icon { background: rgba(34,197,94,0.12) !important; }
-        /* Send button */
-        .cb-send { background: #16a34a !important; color: #fff !important; border: none !important; }
-        .cb-send:hover { background: #15803d !important; }
-        /* Icon buttons */
-        .cb-icon-btn { background: rgba(255,255,255,0.07) !important; border: 1px solid rgba(255,255,255,0.12) !important; color: rgba(240,253,244,0.6) !important; border-radius: 50% !important; }
-        .cb-icon-btn:hover { background: rgba(34,197,94,0.12) !important; color: #4ade80 !important; }
-        /* Text colors */
-        .cb-root .text-gray-600, .cb-root .text-gray-500 { color: rgba(240,253,244,0.55) !important; }
-        .cb-root .text-gray-700, .cb-root .text-gray-800 { color: #f0fdf4 !important; }
-        .cb-root .text-green-600 { color: #4ade80 !important; }
-        .cb-root .text-blue-600 { color: #60a5fa !important; }
-        .cb-root .text-xs { color: rgba(240,253,244,0.4) !important; }
-        /* Status dots */
-        .cb-root .bg-green-500 { background: #22c55e !important; }
-        .cb-root .bg-blue-500 { background: #60a5fa !important; }
-        .cb-root .bg-gray-300 { background: rgba(255,255,255,0.2) !important; }
-        /* Dividers */
-        .cb-root .border-b, .cb-root .border-t { border-color: rgba(255,255,255,0.06) !important; }
-        /* Scrollbar */
-        .cb-root ::-webkit-scrollbar { width: 3px; }
-        .cb-root ::-webkit-scrollbar-thumb { background: rgba(34,197,94,0.2); border-radius: 2px; }
-        /* Clear button */
-        .cb-root .hover\\:bg-red-50:hover { background: rgba(248,113,113,0.1) !important; }
-        .cb-root .hover\\:text-red-600:hover { color: #f87171 !important; }
-        /* Inline table in bot message */
-        .cb-bot-bubble .bg-gray-50 { background: rgba(255,255,255,0.05) !important; }
-        .cb-bot-bubble .text-gray-700 { color: rgba(187,247,208,0.8) !important; }
-        .cb-bot-bubble .text-gray-600 { color: rgba(187,247,208,0.6) !important; }
-        /* Image preview */
-        .cb-root .bg-green-50.rounded-xl { background: rgba(34,197,94,0.08) !important; border-color: rgba(34,197,94,0.2) !important; }
-      `}</style>
+  /* ═══════════════════════════════════════════
+     AI ADVISOR — White + Forest Green Theme
+     Base: #fff / #f8fdf9  Accent: #166534
+  ═══════════════════════════════════════════ */
+  .cb-root {
+    background: #ffffff !important;
+    font-family: 'Crimson Pro', Georgia, serif !important;
+  }
+  .cb-root * { font-family: 'Crimson Pro', Georgia, serif !important; }
+
+  /* ── Scrollbar ── */
+  .cb-root ::-webkit-scrollbar { width: 4px; }
+  .cb-root ::-webkit-scrollbar-thumb { background: #bbf7d0; border-radius: 4px; }
+
+  /* ── All text defaults ── */
+  .cb-root .text-gray-900, .cb-root .text-gray-800, .cb-root .text-gray-700 { color: #1a2e1a !important; }
+  .cb-root .text-gray-600, .cb-root .text-gray-500 { color: #4b6b4b !important; }
+  .cb-root .text-gray-400, .cb-root .text-gray-300 { color: #86a886 !important; }
+  .cb-root .text-xs  { color: #6b8f6b !important; }
+  .cb-root .text-sm  { color: #1a2e1a !important; }
+  .cb-root .text-green-600, .cb-root .text-green-700 { color: #166534 !important; }
+  .cb-root .text-blue-600  { color: #1d4ed8 !important; }
+  .cb-root .text-red-600   { color: #dc2626 !important; }
+
+  /* ── Borders ── */
+  .cb-root .border-b, .cb-root .border-t,
+  .cb-root .border-gray-100, .cb-root .border-gray-200 { border-color: #d1fae5 !important; }
+
+  /* ── Status dots ── */
+  .cb-root .bg-green-500 { background: #22c55e !important; }
+  .cb-root .bg-blue-500  { background: #3b82f6 !important; }
+  .cb-root .bg-gray-300  { background: #d1d5db !important; }
+
+  /* ── Form selects ── */
+  .cb-root select {
+    background: #f0fdf4 !important;
+    border: 1.5px solid #bbf7d0 !important;
+    color: #166534 !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+  }
+  .cb-root select option { background: #fff; color: #166534; }
+  .cb-root select:focus  { border-color: #16a34a !important; outline: none !important; box-shadow: 0 0 0 3px rgba(22,163,74,0.12) !important; }
+
+  /* ══════════════════════════════════
+     QUICK ACTION CHIPS
+  ══════════════════════════════════ */
+  .cb-chip {
+    background: #fff !important;
+    border: 1.5px solid #bbf7d0 !important;
+    border-radius: 14px !important;
+    transition: all 0.18s ease !important;
+    box-shadow: 0 1px 4px rgba(22,163,74,0.08) !important;
+  }
+  .cb-chip span, .cb-chip .text-gray-700 { color: #166534 !important; font-weight: 600 !important; }
+  .cb-chip:hover:not(:disabled) {
+    background: #f0fdf4 !important;
+    border-color: #16a34a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(22,163,74,0.18) !important;
+  }
+  .cb-chip:disabled { opacity: 0.45 !important; }
+  .cb-chip-icon { background: #dcfce7 !important; border: 1px solid #86efac !important; }
+  .cb-chip svg  { stroke: #16a34a !important; color: #16a34a !important; }
+
+  /* ══════════════════════════════════
+     MESSAGES AREA
+  ══════════════════════════════════ */
+  .cb-msgs {
+    background: #f8fdf9 !important;
+    border: 1.5px solid #d1fae5 !important;
+    border-radius: 16px !important;
+  }
+
+  /* ── Bot bubble — white card with left green border ── */
+  .cb-bot-bubble {
+    background: #ffffff !important;
+    border: 1px solid #d1fae5 !important;
+    border-left: 3px solid #16a34a !important;
+    color: #1a2e1a !important;
+    border-radius: 0 16px 16px 0 !important;
+    box-shadow: 0 2px 8px rgba(22,163,74,0.08) !important;
+  }
+  .cb-bot-bubble p, .cb-bot-bubble span,
+  .cb-bot-bubble li, .cb-bot-bubble div { color: #1a2e1a !important; }
+  .cb-bot-bubble strong, .cb-bot-bubble b { color: #166534 !important; font-weight: 700 !important; }
+  .cb-bot-bubble h3, .cb-bot-bubble h4   { color: #15803d !important; }
+
+  /* ── User bubble — dark forest green, white text ── */
+  .cb-user-bubble {
+    background: linear-gradient(135deg, #166534, #15803d) !important;
+    border: none !important;
+    color: #ffffff !important;
+    border-radius: 16px 16px 4px 16px !important;
+    box-shadow: 0 4px 14px rgba(22,101,52,0.30) !important;
+  }
+  .cb-user-bubble * { color: #ffffff !important; }
+
+  /* ── Loading dots ── */
+  .cb-loading-dot { background: #16a34a !important; }
+  .cb-root .bg-gray-100.rounded-2xl {
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+  }
+  .cb-root .bg-green-500.rounded-full.animate-bounce { background: #16a34a !important; }
+
+  /* ══════════════════════════════════
+     INPUT AREA
+  ══════════════════════════════════ */
+  .cb-input-area {
+    background: #fff !important;
+    border: 1.5px solid #bbf7d0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 -1px 12px rgba(22,163,74,0.07) !important;
+  }
+
+  /* ── Text input ── */
+  .cb-text-input {
+    background: #f0fdf4 !important;
+    border: 1.5px solid #bbf7d0 !important;
+    color: #1a2e1a !important;
+    caret-color: #16a34a !important;
+    border-radius: 999px !important;
+    font-size: 14px !important;
+    transition: all .2s !important;
+  }
+  .cb-text-input::placeholder { color: #86efac !important; opacity: 1 !important; }
+  .cb-text-input:focus {
+    border-color: #16a34a !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.12) !important;
+    background: #fff !important;
+  }
+  .cb-text-input:disabled { opacity: 0.5 !important; }
+
+  /* ── Send button ── */
+  .cb-send {
+    background: linear-gradient(135deg, #166534, #16a34a) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 3px 10px rgba(22,163,74,0.35) !important;
+    transition: all .2s !important;
+  }
+  .cb-send:hover:not(:disabled) {
+    transform: scale(1.07) !important;
+    box-shadow: 0 5px 18px rgba(22,163,74,0.45) !important;
+  }
+  .cb-send:disabled { opacity: 0.35 !important; }
+  .cb-send svg { color: #fff !important; stroke: #fff !important; }
+
+  /* ── Icon buttons (camera, clip, mic) ── */
+  .cb-icon-btn {
+    background: #f0fdf4 !important;
+    border: 1.5px solid #bbf7d0 !important;
+    color: #16a34a !important;
+    border-radius: 50% !important;
+    transition: all .18s !important;
+  }
+  .cb-icon-btn:hover:not(:disabled) {
+    background: #dcfce7 !important;
+    border-color: #16a34a !important;
+    transform: scale(1.08) !important;
+  }
+  .cb-icon-btn svg { stroke: #16a34a !important; color: #16a34a !important; }
+
+  /* ── Image preview ── */
+  .cb-root .bg-gray-50 { background: #f0fdf4 !important; }
+  .cb-root .bg-white   { background: #fff !important; }
+
+  /* ── Alert badges ── */
+  .cb-root .bg-red-100    { background: #fee2e2 !important; }
+  .cb-root .bg-yellow-100 { background: #fef3c7 !important; }
+  .cb-root .bg-blue-100   { background: #dbeafe !important; }
+  .cb-root .text-red-700  { color: #b91c1c !important; }
+  .cb-root .text-yellow-700 { color: #b45309 !important; }
+  .cb-root .text-blue-700 { color: #1d4ed8 !important; }
+
+  /* ── Priority badges ── */
+  .cb-root .bg-red-100.text-red-600     { color: #dc2626 !important; }
+  .cb-root .bg-yellow-100.text-yellow-600 { color: #d97706 !important; }
+  .cb-root .bg-gray-100.text-gray-600   { background: #f3f4f6 !important; color: #6b7280 !important; }
+
+  /* ── TTS / clear buttons ── */
+  .cb-root .bg-green-600 { background: #16a34a !important; }
+  .cb-root .bg-red-500   { background: #ef4444 !important; }
+  .cb-root .hover\\:bg-red-50:hover   { background: #fee2e2 !important; }
+  .cb-root .hover\\:text-red-600:hover { color: #dc2626 !important; }
+
+  /* ── Table cells in bot message ── */
+  .cb-bot-bubble .bg-gray-50 { background: #f0fdf4 !important; }
+  .cb-bot-bubble .text-gray-700 { color: #166534 !important; }
+  .cb-bot-bubble .text-gray-600 { color: #4b6b4b !important; }
+
+  /* ── Listening / loading status ── */
+  .cb-root .text-red-600  { color: #dc2626 !important; }
+  .cb-root .text-green-600 { color: #16a34a !important; }
+  .cb-root .text-blue-600  { color: #2563eb !important; }
+`}</style>
       {/* Language & Crop Selector */}
       <div className="mb-3 space-y-2">
         <div className="flex items-center justify-between">
@@ -1265,9 +1408,9 @@ export default function Chatbot() {
           <div className="flex justify-start">
             <div className="bg-gray-100 rounded-2xl px-4 py-3 rounded-bl-sm">
               <div className="flex gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-2 h-2 cb-loading-dot rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 cb-loading-dot rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 cb-loading-dot rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -1277,7 +1420,7 @@ export default function Chatbot() {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white rounded-2xl border border-green-100 p-3">
+      <div className="cb-input-area rounded-2xl p-3">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -1353,7 +1496,7 @@ export default function Chatbot() {
             onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
             placeholder={isLoading ? 'AI is thinking...' : 'Type your question...'}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 rounded-full disabled:opacity-50"
+            className="flex-1 px-4 py-3 rounded-full disabled:opacity-50 cb-text-input"
           />
 
           {/* Send Button */}

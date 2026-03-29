@@ -186,7 +186,7 @@ function HomeScreen({ onNav }: { onNav: (s: PhoneScreen) => void }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9' }}>Namaste, Ramesh Ji 👋</div>
-          <div style={{ fontSize: 9, color: '#64748b', marginTop: 2 }}>Thursday, 26 March · Hisar, HR</div>
+          <div style={{ fontSize: 9, color: '#64748b', marginTop: 2 }}>Thursday, 26 March · India</div>
         </div>
         <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#4ade80,#166534)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: '#fff' }}>R</div>
       </div>
