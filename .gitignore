@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env*.local
+
+# Build output
+dist/
+build/
+
+# Vite
+.vite/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+
+# GCP Service Account Keys - NEVER commit these
+src/gcp-key.json
+**/gcp-key.json
